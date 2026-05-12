@@ -5,14 +5,24 @@ import Core.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Command-line interface for the Grid Strategy - Defenders game.
+ * Handles user input for unit placement, movement, attacking, and healing.
+ */
 public class GameCLI {
 
     private GameEngine engine;
 
+    /**
+     * Creates a new GameCLI instance and starts the game.
+     */
     public GameCLI() {
         run();
     }
 
+    /**
+     * Runs the main game loop, including placement phase and turn-based combat.
+     */
     public void run() {
         Scanner sc = new Scanner(System.in);
         System.out.println("=== Grid Strategy - Defenders ===");
@@ -124,6 +134,13 @@ public class GameCLI {
         System.out.println("Thanks for playing!");
     }
 
+    /**
+     * Runs the unit placement phase before the game starts.
+     * Lets the player place, remove, and review units on the left half of the board.
+     *
+     * @param sc      the scanner for reading user input
+     * @param session the placement session managing unit positions and limits
+     */
     private void runPlacementPhase(Scanner sc, UnitPlacementSession session) {
         System.out.println("\n=== Unit Placement Phase ===");
         System.out.println("Place your units on the left half of the board (cols 0-5).");
@@ -154,7 +171,7 @@ public class GameCLI {
             } else if (cmd.equals("status")) {
                 System.out.println(session.getSummary());
 
-            }else if (cmd.equals("end")) {
+            } else if (cmd.equals("end")) {
                 System.exit(0);
 
             } else if (cmd.equals("remove")) {
@@ -213,6 +230,12 @@ public class GameCLI {
         }
     }
 
+    /**
+     * Prints the current game board to the console.
+     * Highlights the selected unit in yellow, player units in blue, and enemy units in red.
+     *
+     * @param highlighted the unit to highlight, or null for no highlight
+     */
     private void printBoard(Unit highlighted) {
         System.out.println();
         ArrayList<Unit> units = engine.getUnits();
@@ -252,6 +275,10 @@ public class GameCLI {
         System.out.println();
     }
 
+    /**
+     * Prints the result of the enemy's turn and the current game status.
+     * If the game has ended, also prints the final board.
+     */
     private void printEnemyLog() {
         System.out.println("--- Enemy Turn Complete ---");
         System.out.println(">> " + engine.getStatusMessage());
@@ -262,6 +289,9 @@ public class GameCLI {
         }
     }
 
+    /**
+     * Prints general gameplay instructions to the console.
+     */
     private void printInstructions() {
         System.out.println("-------------------------------------------------------");
         System.out.println("  UNITS:  [K] Knight  [A] Archer  [C] Cleric  (blue = yours)");
@@ -276,6 +306,12 @@ public class GameCLI {
         System.out.println("-------------------------------------------------------");
     }
 
+    /**
+     * Prints the available actions for the selected unit.
+     * Support units have an additional heal action.
+     *
+     * @param unit the currently selected unit
+     */
     private void printActionInstructions(Unit unit) {
         if (unit instanceof SupportUnit) {
             System.out.println("  Actions: move <row> <col> | attack <row> <col> | heal <row> <col> | back | end");
@@ -284,6 +320,14 @@ public class GameCLI {
         }
     }
 
+    /**
+     * Returns the unit at the given board position, or null if the tile is empty.
+     *
+     * @param units the list of all units on the board
+     * @param r     the row to check
+     * @param c     the column to check
+     * @return the unit at (r, c), or null if none
+     */
     private Unit getUnitAt(ArrayList<Unit> units, int r, int c) {
         for (int i = 0; i < units.size(); i++) {
             Unit u = units.get(i);
