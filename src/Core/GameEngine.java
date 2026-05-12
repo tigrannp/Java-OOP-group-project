@@ -16,17 +16,17 @@ public class GameEngine {
     }
 
     private void setupGame() {
-        addUnit(new Unit("Knight", "K", 30, 10, 2, 1, false, Team.PLAYER), 2, 1);
-        addUnit(new Unit("Knight", "K", 30, 10, 2, 1, false, Team.PLAYER), 4, 1);
-        addUnit(new Unit("Archer", "A", 20, 8, 2, 3, false, Team.PLAYER), 1, 0);
-        addUnit(new Unit("Archer", "A", 20, 8, 2, 3, false, Team.PLAYER), 5, 0);
-        addUnit(new Unit("Cleric", "C", 20, 5, 2, 2, true, Team.PLAYER), 3, 0);
+        addUnit(new Unit("Knight", "K", 30, 10, 2, 1, Team.PLAYER), 2, 1);
+        addUnit(new Unit("Knight", "K", 30, 10, 2, 1, Team.PLAYER), 4, 1);
+        addUnit(new Unit("Archer", "A", 20, 8, 2, 3, Team.PLAYER), 1, 0);
+        addUnit(new Unit("Archer", "A", 20, 8, 2, 3, Team.PLAYER), 5, 0);
+        addUnit(new SupportUnit("Cleric", "C", 20, 5, 2, 2, Team.PLAYER), 3, 0);
 
-        addUnit(new Unit("Orc", "O", 25, 8, 2, 1, false, Team.ENEMY), 2, 10);
-        addUnit(new Unit("Orc", "O", 25, 8, 2, 1, false, Team.ENEMY), 3, 9);
-        addUnit(new Unit("Orc", "O", 25, 8, 2, 1, false, Team.ENEMY), 4, 10);
-        addUnit(new Unit("Goblin", "G", 15, 5, 3, 3, false, Team.ENEMY), 1, 11);
-        addUnit(new Unit("Goblin", "G", 15, 5, 3, 3, false, Team.ENEMY), 5, 11);
+        addUnit(new Unit("Orc", "O", 25, 8, 2, 1, Team.ENEMY), 2, 10);
+        addUnit(new Unit("Orc", "O", 25, 8, 2, 1, Team.ENEMY), 3, 9);
+        addUnit(new Unit("Orc", "O", 25, 8, 2, 1, Team.ENEMY), 4, 10);
+        addUnit(new Unit("Goblin", "G", 15, 5, 3, 3, Team.ENEMY), 1, 11);
+        addUnit(new Unit("Goblin", "G", 15, 5, 3, 3, Team.ENEMY), 5, 11);
     }
 
     private void addUnit(Unit u, int r, int c) {
@@ -54,12 +54,10 @@ public class GameEngine {
         Unit clickedUnit = getUnitAt(r, c);
 
         if (clickedUnit != null && clickedUnit.getTeam() == Team.PLAYER) {
-            if (selectedUnit != null && selectedUnit.getIsSupport() && clickedUnit != selectedUnit) {
+            if (selectedUnit != null && selectedUnit instanceof SupportUnit && clickedUnit != selectedUnit) {
                 int dist = getDistance(selectedUnit.getRow(), selectedUnit.getCol(), r, c);
                 if (dist <= selectedUnit.getAttackRange() && !selectedUnit.getHasActed()) {
-                    int newHp = clickedUnit.getHp() + selectedUnit.getPower();
-                    if (newHp > clickedUnit.getMaxHp()) newHp = clickedUnit.getMaxHp();
-                    clickedUnit.setHp(newHp);
+                    ((SupportUnit) selectedUnit).heal(clickedUnit);
                     selectedUnit.setHasActed(true);
                     statusMessage = "Healed " + clickedUnit.getName() + "!";
                     selectedUnit = null;
@@ -135,7 +133,6 @@ public class GameEngine {
         Unit target = null;
         int minDistance = 9999;
 
-        //find player units
         for (int i = 0; i < units.size(); i++) {
             Unit p = units.get(i);
             if (p.getTeam() == Team.PLAYER && p.getHp() > 0) {
@@ -149,7 +146,6 @@ public class GameEngine {
 
         if (target == null) return;
 
-        //move to the best spot
         if (minDistance > enemy.getAttackRange()) {
             int bestRow = enemy.getRow();
             int bestCol = enemy.getCol();
@@ -181,7 +177,6 @@ public class GameEngine {
             minDistance = bestDistToTarget;
         }
 
-        //attack if possible
         if (minDistance <= enemy.getAttackRange()) {
             target.setHp(target.getHp() - enemy.getPower());
         }

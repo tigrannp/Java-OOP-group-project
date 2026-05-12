@@ -3,6 +3,7 @@ package Cli;
 import Core.GameEngine;
 import Core.Team;
 import Core.Unit;
+import Core.SupportUnit;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -55,15 +56,14 @@ public class GameCLI {
                 continue;
             }
 
-            // Reprint board with selected unit highlighted in yellow
             printBoard(selected);
             System.out.println("Selected: " + selected.getName() +
                     " | HP: " + selected.getHp() + "/" + selected.getMaxHp() +
                     " | Power: " + selected.getPower() +
                     " | Move: " + selected.getMoveRange() +
                     " | Attack: " + selected.getAttackRange() +
-                    " | Role: " + (selected.getIsSupport() ? "Support" : "Combat"));
-            printActionInstructions(selected.getName());
+                    " | Role: " + (selected instanceof SupportUnit ? "Support" : "Combat"));
+            printActionInstructions(selected);
 
             System.out.print("Action: ");
             String actionLine = sc.nextLine().trim();
@@ -106,7 +106,6 @@ public class GameCLI {
                 continue;
             }
 
-            // first click selects, second click acts
             engine.handleClick(selRow, selCol);
             engine.handleClick(targetRow, targetCol);
 
@@ -126,14 +125,12 @@ public class GameCLI {
         System.out.println();
         ArrayList<Unit> units = engine.getUnits();
 
-        // Column headers
         System.out.print("    ");
         for (int c = 0; c < 12; c++) {
             System.out.printf("%2d ", c);
         }
         System.out.println();
 
-        // Separator
         System.out.print("   ");
         for (int c = 0; c < 12; c++) {
             System.out.print("---");
@@ -147,11 +144,11 @@ public class GameCLI {
 
                 if (highlighted != null && u != null
                         && highlighted.getRow() == r && highlighted.getCol() == c) {
-                    System.out.print("\u001b[33m[" + u.getSymbol() + "]\u001b[0m"); // yellow
+                    System.out.print("\u001b[33m[" + u.getSymbol() + "]\u001b[0m");
                 } else if (u != null && u.getTeam() == Team.PLAYER) {
-                    System.out.print("\u001b[34m[" + u.getSymbol() + "]\u001b[0m"); // blue
+                    System.out.print("\u001b[34m[" + u.getSymbol() + "]\u001b[0m");
                 } else if (u != null && u.getTeam() == Team.ENEMY) {
-                    System.out.print("\u001b[31m[" + u.getSymbol() + "]\u001b[0m"); // red
+                    System.out.print("\u001b[31m[" + u.getSymbol() + "]\u001b[0m");
                 } else {
                     System.out.print(" . ");
                 }
@@ -187,10 +184,10 @@ public class GameCLI {
         System.out.println("-------------------------------------------------------");
     }
 
-    private void printActionInstructions(String n) {
-        if(n == "Cleric"){
+    private void printActionInstructions(Unit unit) {
+        if (unit instanceof SupportUnit) {
             System.out.println("  Actions: move <row> <col> | attack <row> <col> | heal <row> <col> | back | end");
-        }else{
+        } else {
             System.out.println("  Actions: move <row> <col> | attack <row> <col> | back | end");
         }
     }

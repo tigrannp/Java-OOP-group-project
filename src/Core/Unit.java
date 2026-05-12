@@ -9,14 +9,13 @@ public class Unit {
     private int power;
     private int moveRange;
     private int attackRange;
-    private boolean isSupport;
     private int row;
     private int col;
     private boolean hasMoved;
     private boolean hasActed;
     private Team team;
 
-    public Unit(String name, String symbol, int hp, int power, int moveRange, int attackRange, boolean isSupport, Team team) {
+    public Unit(String name, String symbol, int hp, int power, int moveRange, int attackRange, Team team) {
         this.name = name;
         this.symbol = symbol;
         this.hp = hp;
@@ -24,7 +23,6 @@ public class Unit {
         this.power = power;
         this.moveRange = moveRange;
         this.attackRange = attackRange;
-        this.isSupport = isSupport;
         this.hasMoved = false;
         this.hasActed = false;
         this.team = team;
@@ -44,7 +42,6 @@ public class Unit {
     public int getPower() { return this.power; }
     public int getMoveRange() { return this.moveRange; }
     public int getAttackRange() { return this.attackRange; }
-    public boolean getIsSupport() { return this.isSupport; }
     public Team getTeam() { return this.team; }
     public int getRow() { return this.row; }
     public int getCol() { return this.col; }
@@ -56,7 +53,5 @@ public class Unit {
     public void setCol(int col) { this.col = col; }
     public void setHasMoved(boolean moved) { this.hasMoved = moved; }
     public void setHasActed(boolean acted) { this.hasActed = acted; }
-    public void setHp(int hp) {
-        this.hp = hp;
-    }
+    public void setHp(int hp) { this.hp = hp; }
 }

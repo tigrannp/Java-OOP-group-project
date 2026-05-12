@@ -3,6 +3,7 @@ package UI;
 import Core.GameEngine;
 import Core.Team;
 import Core.Unit;
+import Core.SupportUnit;
 
 import javax.swing.JFrame;
 import java.awt.Graphics;
@@ -89,7 +90,7 @@ public class GameWindow extends JFrame implements MouseListener {
         g.drawString("Status Log: " + engine.getStatusMessage(), 50, 440);
 
         if (selectedUnit != null) {
-            String role = selectedUnit.getIsSupport() ? "Support" : "Combat";
+            String role = (selectedUnit instanceof SupportUnit) ? "Support" : "Combat";
             g.drawString("Selected: " + selectedUnit.getName() + " | HP: " + selectedUnit.getHp() + "/" + selectedUnit.getMaxHp(), 50, 470);
             g.drawString("Role: " + role + " | Power: " + selectedUnit.getPower(), 50, 490);
             g.drawString("Move Range: " + selectedUnit.getMoveRange() + " | Attack Range: " + selectedUnit.getAttackRange(), 50, 510);
