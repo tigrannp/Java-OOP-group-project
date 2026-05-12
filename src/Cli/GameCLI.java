@@ -1,9 +1,6 @@
 package Cli;
 
-import Core.GameEngine;
-import Core.Team;
-import Core.Unit;
-import Core.SupportUnit;
+import Core.*;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -13,13 +10,19 @@ public class GameCLI {
     private GameEngine engine;
 
     public GameCLI() {
-        this.engine = new GameEngine();
+        run();
     }
 
     public void run() {
         Scanner sc = new Scanner(System.in);
+        System.out.println("=== Grid Strategy - Defenders ===");
 
-        System.out.println("=== Grid Strategy - Defenders (CLI Mode) ===");
+        ArrayList<Unit> templates = UnitDatabase.loadUnits(GameEngine.databasePath);
+        UnitPlacementSession session = new UnitPlacementSession(templates);
+
+        runPlacementPhase(sc, session);
+
+        this.engine = new GameEngine(session.getPlacedUnits());
 
         while (engine.getCurrentTurn() != null) {
             printBoard(null);
@@ -119,6 +122,95 @@ public class GameCLI {
         }
 
         System.out.println("Thanks for playing!");
+    }
+
+    private void runPlacementPhase(Scanner sc, UnitPlacementSession session) {
+        System.out.println("\n=== Unit Placement Phase ===");
+        System.out.println("Place your units on the left half of the board (cols 0-5).");
+        System.out.println("Commands:");
+        System.out.println("  place <Knight|Archer|Cleric> <row> <col>");
+        System.out.println("  remove <row> <col>");
+        System.out.println("  status");
+        System.out.println("  done   (finalize, minimum 1 unit required)");
+        System.out.println("  end");
+        System.out.println();
+
+        while (true) {
+            System.out.print("Placement> ");
+            String line = sc.nextLine().trim();
+            if (line.isEmpty()) continue;
+
+            String[] parts = line.split(" ");
+            String cmd = parts[0].toLowerCase();
+
+            if (cmd.equals("done")) {
+                if (!session.isReady()) {
+                    System.out.println("You need at least 1 unit before starting.");
+                    continue;
+                }
+                System.out.println("Placement finalized. Starting game!\n");
+                break;
+
+            } else if (cmd.equals("status")) {
+                System.out.println(session.getSummary());
+
+            }else if (cmd.equals("end")) {
+                System.exit(0);
+
+            } else if (cmd.equals("remove")) {
+                if (parts.length != 3) {
+                    System.out.println("Usage: remove <row> <col>");
+                    continue;
+                }
+                try {
+                    int row = Integer.parseInt(parts[1]);
+                    int col = Integer.parseInt(parts[2]);
+                    boolean removed = session.removeUnit(row, col);
+                    System.out.println(removed ? "Unit removed." : "No unit at that position.");
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid row/col.");
+                }
+
+            } else if (cmd.equals("place")) {
+                if (parts.length != 4) {
+                    System.out.println("Usage: place <Knight|Archer|Cleric> <row> <col>");
+                    continue;
+                }
+                String name = parts[1];
+                name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+                try {
+                    int row = Integer.parseInt(parts[2]);
+                    int col = Integer.parseInt(parts[3]);
+                    PlacementResult result = session.placeUnit(name, row, col);
+                    switch (result) {
+                        case SUCCESS:
+                            System.out.println(name + " placed at (" + row + ", " + col + ").");
+                            System.out.println(session.getSummary());
+                            break;
+                        case EXCEED_TOTAL:
+                            System.out.println("Maximum of 5 units reached.");
+                            break;
+                        case EXCEED_TYPE:
+                            System.out.println("Maximum of that unit type reached.");
+                            break;
+                        case OUT_OF_BOUNDS:
+                            System.out.println("Position out of bounds. Rows: 0-6, Cols: 0-5.");
+                            break;
+                        case TILE_TAKEN:
+                            System.out.println("That tile is already occupied.");
+                            break;
+                        case INVALID_TYPE:
+                            System.out.println("Unknown unit type. Choose Knight, Archer, or Cleric.");
+                            break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid row/col.");
+                }
+
+            } else {
+                System.out.println("Unknown command. Use place, remove, status, or done.");
+            }
+        }
     }
 
     private void printBoard(Unit highlighted) {

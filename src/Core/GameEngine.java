@@ -3,24 +3,23 @@ package Core;
 import java.util.ArrayList;
 
 public class GameEngine {
+    public static final String databasePath = "units.txt";
     private ArrayList<Unit> units;
     private Unit selectedUnit;
     private Team currentTurn;
     private String statusMessage;
 
-    public GameEngine() {
+    public GameEngine(ArrayList<Unit> playerUnits) {
         this.units = new ArrayList<Unit>();
         this.currentTurn = Team.PLAYER;
         this.statusMessage = "Welcome! Player's turn. Your units are blue.";
-        setupGame();
+        setupGame(playerUnits);
     }
 
-    private void setupGame() {
-        addUnit(new Unit("Knight", "K", 30, 10, 2, 1, Team.PLAYER), 2, 1);
-        addUnit(new Unit("Knight", "K", 30, 10, 2, 1, Team.PLAYER), 4, 1);
-        addUnit(new Unit("Archer", "A", 20, 8, 2, 3, Team.PLAYER), 1, 0);
-        addUnit(new Unit("Archer", "A", 20, 8, 2, 3, Team.PLAYER), 5, 0);
-        addUnit(new SupportUnit("Cleric", "C", 20, 5, 2, 2, Team.PLAYER), 3, 0);
+    private void setupGame(ArrayList<Unit> playerUnits) {
+        for (Unit u : playerUnits) {
+            units.add(u);
+        }
 
         addUnit(new Unit("Orc", "O", 25, 8, 2, 1, Team.ENEMY), 2, 10);
         addUnit(new Unit("Orc", "O", 25, 8, 2, 1, Team.ENEMY), 3, 9);
@@ -88,6 +87,7 @@ public class GameEngine {
         }
     }
 
+    //javadoc sarqi sra vrov
     public void handleClick(int r, int c) {
         Unit clickedUnit = getUnitAt(r, c);
 
@@ -113,6 +113,7 @@ public class GameEngine {
         checkWinCondition();
     }
 
+    //sra vrov el
     public void passTurn() {
         currentTurn = Team.ENEMY;
         selectedUnit = null;

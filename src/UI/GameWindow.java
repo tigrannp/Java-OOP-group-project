@@ -29,7 +29,6 @@ public class GameWindow extends JFrame implements MouseListener {
         });
 
         this.addMouseListener(this);
-        this.engine = new GameEngine();
     }
 
     public void paint(Graphics g) {
