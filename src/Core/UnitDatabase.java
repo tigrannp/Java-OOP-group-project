@@ -7,8 +7,20 @@ import java.io.FileNotFoundException;
 
 import static Core.Team.PLAYER;
 
+/**
+ * Loads unit templates from a CSV database file.
+ */
 public class UnitDatabase {
 
+    /**
+     * Reads unit definitions from a CSV file and returns them as a list of unit templates.
+     * Each line defines one unit. Lines with 6 fields create a regular {@link Unit};
+     * lines with 7 fields (including healing power) create a {@link SupportUnit}.
+     * Blank lines are skipped.
+     *
+     * @param path the path to the CSV database file
+     * @return a list of unit templates loaded from the file, or an empty list if the file is not found
+     */
     public static ArrayList<Unit> loadUnits(String path) {
         ArrayList<Unit> templates = new ArrayList<Unit>();
 
@@ -39,8 +51,7 @@ public class UnitDatabase {
 
                     u = new SupportUnit(name, symbol, hp, power, move, attack, PLAYER, healingPower);
 
-                }
-                else {
+                } else {
                     u = new Unit(name, symbol, hp, power, move, attack, PLAYER);
                 }
                 templates.add(u);
