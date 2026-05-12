@@ -7,9 +7,7 @@ public class UnitPlacementSession {
     private ArrayList<Unit> placedUnits;
 
     private static final int MAX_TOTAL = 5;
-    private static final int MAX_KNIGHTS = 3;
-    private static final int MAX_ARCHERS = 3;
-    private static final int MAX_CLERICS = 2;
+    private static final int MAX_UNITS = 3;
     private static final int MAX_COL = 5;
     private static final int ROWS = 7;
 
@@ -47,26 +45,17 @@ public class UnitPlacementSession {
         if (isTileTaken(row, col))
             return PlacementResult.TILE_TAKEN;
 
-        if (name.equals("Knight") && countByName("Knight") >= MAX_KNIGHTS)
+        if (name.equals("Knight") && countByName("Knight") >= MAX_UNITS)
             return PlacementResult.EXCEED_TYPE;
-        if (name.equals("Archer") && countByName("Archer") >= MAX_ARCHERS)
+        if (name.equals("Archer") && countByName("Archer") >= MAX_UNITS)
             return PlacementResult.EXCEED_TYPE;
-        if (name.equals("Cleric") && countByName("Cleric") >= MAX_CLERICS)
+        if (name.equals("Cleric") && countByName("Cleric") >= MAX_UNITS)
             return PlacementResult.EXCEED_TYPE;
 
         Unit template = getTemplate(name);
         if (template == null) return PlacementResult.INVALID_TYPE;
 
-        Unit unit;
-        if (template instanceof SupportUnit) {
-            unit = new SupportUnit(template.getName(), template.getSymbol(), template.getMaxHp(),
-                    template.getPower(), template.getMoveRange(), template.getAttackRange(),
-                    Team.PLAYER, ((SupportUnit) template).getHealingPower());
-        } else {
-            unit = new Unit(template.getName(), template.getSymbol(), template.getMaxHp(),
-                    template.getPower(), template.getMoveRange(), template.getAttackRange(),
-                    Team.PLAYER);
-        }
+        Unit unit = template.clone(Team.PLAYER);
 
         unit.setRow(row);
         unit.setCol(col);
@@ -98,9 +87,9 @@ public class UnitPlacementSession {
         for (Unit u : placedUnits) {
             sb.append("  ").append(u.getName()).append(" at (").append(u.getRow()).append(", ").append(u.getCol()).append(")\n");
         }
-        sb.append("Remaining slots: Knights ").append(MAX_KNIGHTS - countByName("Knight"))
-                .append(", Archers ").append(MAX_ARCHERS - countByName("Archer"))
-                .append(", Clerics ").append(MAX_CLERICS - countByName("Cleric"));
+        sb.append("Remaining slots: Knights ").append(MAX_UNITS - countByName("Knight"))
+                .append(", Archers ").append(MAX_UNITS - countByName("Archer"))
+                .append(", Clerics ").append(MAX_UNITS - countByName("Cleric"));
         return sb.toString();
     }
 }

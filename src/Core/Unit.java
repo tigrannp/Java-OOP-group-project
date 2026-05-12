@@ -67,4 +67,8 @@ public class Unit {
         target.setHp(newHp);
         this.hasActed = true;
     }
+
+    public Unit clone(Team team) {
+        return new Unit(this.name, this.symbol, this.maxHp, this.power, this.moveRange, this.attackRange, team);
+    }
 }

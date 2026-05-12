@@ -16,4 +16,11 @@ public class SupportUnit extends Unit {
         if (newHp > target.getMaxHp()) newHp = target.getMaxHp();
         target.setHp(newHp);
     }
+
+    @Override
+    public Unit clone(Team team) {
+        return new SupportUnit(this.getName(), this.getSymbol(), this.getMaxHp(),
+                this.getPower(), this.getMoveRange(), this.getAttackRange(),
+                team, this.healingPower);
+    }
 }
