@@ -54,4 +54,17 @@ public class Unit {
     public void setHasMoved(boolean moved) { this.hasMoved = moved; }
     public void setHasActed(boolean acted) { this.hasActed = acted; }
     public void setHp(int hp) { this.hp = hp; }
+
+
+    public void move(int newR, int newC) {
+        this.row = newR;
+        this.col = newC;
+        this.hasMoved = true;
+    }
+
+    public void attack(Unit target) {
+        int newHp = target.getHp() - this.getPower();
+        target.setHp(newHp);
+        this.hasActed = true;
+    }
 }

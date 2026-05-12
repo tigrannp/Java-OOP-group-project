@@ -50,51 +50,66 @@ public class GameEngine {
         return Math.abs(r1 - r2) + Math.abs(c1 - c2);
     }
 
+    private void performMove(int r, int c, int dist) {
+        if (dist <= selectedUnit.getMoveRange() && !selectedUnit.getHasMoved()) {
+            selectedUnit.move(r, c);
+            statusMessage = selectedUnit.getName() + " moved.";
+        } else {
+            selectedUnit = null;
+        }
+    }
+
+    private void performAttack(Unit target, int dist) {
+        if (dist <= selectedUnit.getAttackRange() && !selectedUnit.getHasActed()) {
+            selectedUnit.attack(target);
+            statusMessage = "Attacked " + target.getName() + "!";
+
+            if (target.getHp() <= 0) {
+                units.remove(target);
+                statusMessage = target.getName() + " destroyed!";
+            }
+            selectedUnit = null;
+        } else {
+            selectedUnit = null;
+        }
+    }
+
+    private void performHeal(Unit target, int dist) {
+        if (selectedUnit instanceof SupportUnit && target != selectedUnit &&
+                dist <= selectedUnit.getAttackRange() && !selectedUnit.getHasActed()) {
+
+            ((SupportUnit) selectedUnit).heal(target);
+            selectedUnit.setHasActed(true);
+            statusMessage = "Healed " + target.getName() + "!";
+            selectedUnit = null;
+        } else {
+            selectedUnit = target;
+            statusMessage = "Selected " + selectedUnit.getName();
+        }
+    }
+
     public void handleClick(int r, int c) {
         Unit clickedUnit = getUnitAt(r, c);
 
+        int dist = (selectedUnit != null) ? getDistance(selectedUnit.getRow(), selectedUnit.getCol(), r, c) : -1;
+
         if (clickedUnit != null && clickedUnit.getTeam() == Team.PLAYER) {
-            if (selectedUnit != null && selectedUnit instanceof SupportUnit && clickedUnit != selectedUnit) {
-                int dist = getDistance(selectedUnit.getRow(), selectedUnit.getCol(), r, c);
-                if (dist <= selectedUnit.getAttackRange() && !selectedUnit.getHasActed()) {
-                    ((SupportUnit) selectedUnit).heal(clickedUnit);
-                    selectedUnit.setHasActed(true);
-                    statusMessage = "Healed " + clickedUnit.getName() + "!";
-                    selectedUnit = null;
-                } else {
-                    selectedUnit = clickedUnit;
-                }
+            if (selectedUnit != null) {
+                performHeal(clickedUnit, dist);
             } else {
                 selectedUnit = clickedUnit;
                 statusMessage = "Selected " + selectedUnit.getName();
             }
-        } else if (selectedUnit != null && selectedUnit.getTeam() == Team.PLAYER) {
-            int dist = getDistance(selectedUnit.getRow(), selectedUnit.getCol(), r, c);
+        }
 
+        else if (selectedUnit != null && selectedUnit.getTeam() == Team.PLAYER) {
             if (clickedUnit == null) {
-                if (dist <= selectedUnit.getMoveRange() && !selectedUnit.getHasMoved()) {
-                    selectedUnit.setRow(r);
-                    selectedUnit.setCol(c);
-                    selectedUnit.setHasMoved(true);
-                    statusMessage = selectedUnit.getName() + " moved.";
-                } else {
-                    selectedUnit = null;
-                }
+                performMove(r, c, dist);
             } else if (clickedUnit.getTeam() == Team.ENEMY) {
-                if (dist <= selectedUnit.getAttackRange() && !selectedUnit.getHasActed()) {
-                    clickedUnit.setHp(clickedUnit.getHp() - selectedUnit.getPower());
-                    selectedUnit.setHasActed(true);
-                    statusMessage = "Attacked " + clickedUnit.getName() + "!";
-                    if (clickedUnit.getHp() <= 0) {
-                        units.remove(clickedUnit);
-                        statusMessage = clickedUnit.getName() + " destroyed!";
-                    }
-                    selectedUnit = null;
-                } else {
-                    selectedUnit = null;
-                }
+                performAttack(clickedUnit, dist);
             }
         }
+
         checkWinCondition();
     }
 
