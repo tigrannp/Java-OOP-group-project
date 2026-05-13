@@ -4,7 +4,6 @@ import Cli.GameConsole;
  * Entry point for the Grid Strategy - Defenders application.
  */
 public class Main {
-
     /**
      * Launches the game in CLI mode.
      *

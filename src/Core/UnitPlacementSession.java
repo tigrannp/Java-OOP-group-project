@@ -3,16 +3,15 @@ package Core;
 import java.util.ArrayList;
 
 public class UnitPlacementSession {
-    private ArrayList<Unit> templates;
+    private ArrayList<Unit> unitBlueprints;
     private ArrayList<Unit> placedUnits;
-
     private static final int MAX_TOTAL = 5;
     private static final int MAX_UNITS = 3;
     private static final int MAX_COL = 5;
     private static final int ROWS = 7;
 
-    public UnitPlacementSession(ArrayList<Unit> templates) {
-        this.templates = templates;
+    public UnitPlacementSession(ArrayList<Unit> unitBlueprints) {
+        this.unitBlueprints = unitBlueprints;
         this.placedUnits = new ArrayList<Unit>();
     }
 
@@ -20,7 +19,7 @@ public class UnitPlacementSession {
     public int getTotalPlaced() { return placedUnits.size(); }
     public boolean isReady() { return placedUnits.size() > 0; }
 
-    public ArrayList<Unit> getTemplates() { return templates; }
+    public ArrayList<Unit> getUnitBlueprints() { return unitBlueprints; }
 
     public int countByName(String name) {
         int count = 0;
@@ -44,18 +43,12 @@ public class UnitPlacementSession {
             return PlacementResult.OUT_OF_BOUNDS;
         if (isTileTaken(row, col))
             return PlacementResult.TILE_TAKEN;
-
-        if (name.equals("Knight") && countByName("Knight") >= MAX_UNITS)
-            return PlacementResult.EXCEED_TYPE;
-        if (name.equals("Archer") && countByName("Archer") >= MAX_UNITS)
-            return PlacementResult.EXCEED_TYPE;
-        if (name.equals("Cleric") && countByName("Cleric") >= MAX_UNITS)
+        if (countByName(name) >= MAX_UNITS)
             return PlacementResult.EXCEED_TYPE;
 
-        Unit template = getTemplate(name);
-        if (template == null) return PlacementResult.INVALID_TYPE;
-
-        Unit unit = template.clone(Team.PLAYER);
+        Unit blueprint = getBlueprint(name);
+        if (blueprint == null) return PlacementResult.INVALID_TYPE;
+        Unit unit = blueprint.clone(Team.PLAYER);
 
         unit.setRow(row);
         unit.setCol(col);
@@ -74,8 +67,8 @@ public class UnitPlacementSession {
         return false;
     }
 
-    private Unit getTemplate(String name) {
-        for (Unit t : templates) {
+    private Unit getBlueprint(String name) {
+        for (Unit t : unitBlueprints) {
             if (t.getName().equals(name)) return t;
         }
         return null;

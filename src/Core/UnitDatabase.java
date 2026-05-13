@@ -11,7 +11,6 @@ import static Core.Team.PLAYER;
  * Loads unit templates from a CSV database file.
  */
 public class UnitDatabase {
-
     /**
      * Reads unit definitions from a CSV file and returns them as a list of unit templates.
      * Each line defines one unit. Lines with 6 fields create a regular {@link Unit};

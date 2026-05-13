@@ -35,6 +35,7 @@ public class SupportUnit extends Unit {
         return healingPower;
     }
 
+
     /**
      * Heals a target unit by this unit's healing power, capped at the target's max HP.
      *
