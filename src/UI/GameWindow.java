@@ -1,83 +1,126 @@
 package UI;
 
-import Core.GameEngine;
-import Core.Team;
-import Core.Unit;
-import Core.SupportUnit;
+import Core.*;
 
-import javax.swing.JFrame;
-import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 public class GameWindow extends JFrame implements MouseListener {
+
+    private static final int TILE = 50;
+    private static final int OFFSET_X = 50;
+    private static final int OFFSET_Y = 50;
+    private static final int ROWS = 7;
+    private static final int COLS = 12;
+    private static final int MAX_PLACE_COL = 5;
+
     private GameEngine engine;
+    private UnitPlacementSession session;
+    private String selectedUnitName = null;
+    private boolean inPlacement = true;
 
     public GameWindow() {
         super("Grid Strategy - Defenders");
-        this.setSize(800, 650);
+        setSize(800, 650);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        addMouseListener(this);
 
-        this.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                dispose();
-                System.exit(0);
-            }
-        });
+        ArrayList<Unit> blueprints = UnitDatabase.loadUnits(GameEngine.databasePath);
+        session = new UnitPlacementSession(blueprints);
 
-        this.addMouseListener(this);
+        setVisible(true);
     }
 
+    @Override
     public void paint(Graphics g) {
+        if (inPlacement) paintPlacement(g);
+        else             paintBattle(g);
+    }
+
+    private void paintPlacement(Graphics g) {
         g.setColor(Color.DARK_GRAY);
         g.fillRect(0, 0, 800, 650);
 
-        int offsetX = 50;
-        int offsetY = 50;
-        int tileSize = 50;
-
-        for (int r = 0; r < 7; r++) {
-            for (int c = 0; c < 12; c++) {
-                int x = offsetX + (c * tileSize);
-                int y = offsetY + (r * tileSize);
-                if ((r + c) % 2 == 0) {
-                    g.setColor(Color.LIGHT_GRAY);
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLS; c++) {
+                int x = OFFSET_X + c * TILE;
+                int y = OFFSET_Y + r * TILE;
+                if (c <= MAX_PLACE_COL) {
+                    g.setColor(new Color(180, 210, 240));
                 } else {
                     g.setColor(Color.GRAY);
                 }
-                g.fillRect(x, y, tileSize, tileSize);
+                g.fillRect(x, y, TILE, TILE);
                 g.setColor(Color.BLACK);
-                g.drawRect(x, y, tileSize, tileSize);
+                g.drawRect(x, y, TILE, TILE);
             }
         }
 
-        Unit selectedUnit = engine.getSelectedUnit();
-        Team currentTurn = engine.getCurrentTurn();
+        for (Unit u : session.getPlacedUnits()) {
+            int x = OFFSET_X + u.getCol() * TILE;
+            int y = OFFSET_Y + u.getRow() * TILE;
+            g.setColor(Color.BLUE);
+            g.fillOval(x + 5, y + 5, 40, 40);
+            g.setColor(Color.WHITE);
+            g.drawString(u.getSymbol(), x + 18, y + 30);
+        }
 
-        if (selectedUnit != null && currentTurn == Team.PLAYER) {
+        int bx = OFFSET_X + COLS * TILE + 10;
+        g.setColor(Color.WHITE);
+        g.drawString("Select unit:", bx, OFFSET_Y);
+        ArrayList<Unit> blueprints = session.getUnitBlueprints();
+        for (int i = 0; i < blueprints.size(); i++) {
+            String name = blueprints.get(i).getName();
+            int by = OFFSET_Y + 20 + i * 40;
+            g.setColor(name.equals(selectedUnitName) ? Color.YELLOW : Color.LIGHT_GRAY);
+            g.fillRect(bx, by, 100, 30);
+            g.setColor(Color.BLACK);
+            g.drawRect(bx, by, 100, 30);
+            g.drawString(name, bx + 8, by + 20);
+        }
+
+        int doneY = OFFSET_Y + 20 + blueprints.size() * 40 + 20;
+        g.setColor(session.isReady() ? Color.GREEN : Color.GRAY);
+        g.fillRect(bx, doneY, 100, 30);
+        g.setColor(Color.BLACK);
+        g.drawRect(bx, doneY, 100, 30);
+        g.drawString("Start Battle", bx + 5, doneY + 20);
+
+        g.setColor(Color.WHITE);
+        g.drawString(session.getSummary().split("\n")[0], OFFSET_X, OFFSET_Y + ROWS * TILE + 30);
+        String hint = selectedUnitName != null ? "Placing: " + selectedUnitName + "  |  Click tile to place, click unit to remove" : "Select a unit type on the right";
+        g.drawString(hint, OFFSET_X, OFFSET_Y + ROWS * TILE + 50);
+    }
+
+    private void paintBattle(Graphics g) {
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect(0, 0, 800, 650);
+
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLS; c++) {
+                int x = OFFSET_X + c * TILE;
+                int y = OFFSET_Y + r * TILE;
+                g.setColor((r + c) % 2 == 0 ? Color.LIGHT_GRAY : Color.GRAY);
+                g.fillRect(x, y, TILE, TILE);
+                g.setColor(Color.BLACK);
+                g.drawRect(x, y, TILE, TILE);
+            }
+        }
+
+        Unit selected = engine.getSelectedUnit();
+        if (selected != null && engine.getCurrentTurn() == Team.PLAYER) {
             g.setColor(Color.YELLOW);
-            g.drawRect(offsetX + (selectedUnit.getCol() * tileSize), offsetY + (selectedUnit.getRow() * tileSize), tileSize, tileSize);
+            g.drawRect(OFFSET_X + selected.getCol() * TILE, OFFSET_Y + selected.getRow() * TILE, TILE, TILE);
         }
 
-        ArrayList<Unit> units = engine.getUnits();
-        for (int i = 0; i < units.size(); i++) {
-            Unit u = units.get(i);
-            int x = offsetX + (u.getCol() * tileSize) + 5;
-            int y = offsetY + (u.getRow() * tileSize) + 5;
-
-            if (u.getTeam() == Team.PLAYER) {
-                g.setColor(Color.BLUE);
-            } else {
-                g.setColor(Color.RED);
-            }
-
-            if (u.getHasMoved() && u.getHasActed()) {
-                g.setColor(Color.BLACK);
-            }
-
+        for (Unit u : engine.getUnits()) {
+            int x = OFFSET_X + u.getCol() * TILE + 5;
+            int y = OFFSET_Y + u.getRow() * TILE + 5;
+            if (u.getHasMoved() && u.getHasActed()) g.setColor(Color.BLACK);
+            else if (u.getTeam() == Team.PLAYER)    g.setColor(Color.BLUE);
+            else                                     g.setColor(Color.RED);
             g.fillOval(x, y, 40, 40);
             g.setColor(Color.WHITE);
             g.drawString(u.getSymbol(), x + 15, y + 25);
@@ -86,16 +129,13 @@ public class GameWindow extends JFrame implements MouseListener {
         }
 
         g.setColor(Color.WHITE);
-        g.drawString("Status Log: " + engine.getStatusMessage(), 50, 440);
+        g.drawString("Status: " + engine.getStatusMessage(), 50, 440);
 
-        if (selectedUnit != null) {
-            String role = (selectedUnit instanceof SupportUnit) ? "Support" : "Combat";
-            g.drawString("Selected: " + selectedUnit.getName() + " | HP: " + selectedUnit.getHp() + "/" + selectedUnit.getMaxHp(), 50, 470);
-            g.drawString("Role: " + role + " | Power: " + selectedUnit.getPower(), 50, 490);
-            g.drawString("Move Range: " + selectedUnit.getMoveRange() + " | Attack Range: " + selectedUnit.getAttackRange(), 50, 510);
-            String actedStr = selectedUnit.getHasActed() ? "[Acted]" : "[Can Act]";
-            String movedStr = selectedUnit.getHasMoved() ? "[Moved]" : "[Can Move]";
-            g.drawString("Status: " + movedStr + " " + actedStr, 50, 530);
+        if (selected != null) {
+            String role = (selected instanceof SupportUnit) ? "Support" : "Combat";
+            g.drawString("Selected: " + selected.getName() + " | HP: " + selected.getHp() + "/" + selected.getMaxHp(), 50, 460);
+            g.drawString("Role: " + role + " | Power: " + selected.getPower() + " | Move: " + selected.getMoveRange() + " | Range: " + selected.getAttackRange(), 50, 478);
+            g.drawString((selected.getHasMoved() ? "[Moved]" : "[Can Move]") + " " + (selected.getHasActed() ? "[Acted]" : "[Can Act]"), 50, 496);
         }
 
         g.setColor(Color.RED);
@@ -104,30 +144,74 @@ public class GameWindow extends JFrame implements MouseListener {
         g.drawString("END TURN", 630, 490);
     }
 
-    public void mouseClicked(MouseEvent e) { }
-    public void mouseEntered(MouseEvent e) { }
-    public void mouseExited(MouseEvent e) { }
-    public void mouseReleased(MouseEvent e) { }
-
+    @Override
     public void mousePressed(MouseEvent e) {
-        int mouseX = e.getX();
-        int mouseY = e.getY();
+        if (inPlacement) handlePlacementClick(e.getX(), e.getY());
+        else             handleBattleClick(e.getX(), e.getY());
+        repaint();
+    }
 
-        if (mouseX >= 600 && mouseX <= 720 && mouseY >= 460 && mouseY <= 510) {
-            if (engine.getCurrentTurn() == Team.PLAYER) {
-                engine.passTurn();
+    private void handlePlacementClick(int mx, int my) {
+        ArrayList<Unit> blueprints = session.getUnitBlueprints();
+
+        // unit type buttons
+        int bx = OFFSET_X + COLS * TILE + 10;
+        for (int i = 0; i < blueprints.size(); i++) {
+            int by = OFFSET_Y + 20 + i * 40;
+            if (mx >= bx && mx <= bx + 100 && my >= by && my <= by + 30) {
+                selectedUnitName = blueprints.get(i).getName();
+                return;
             }
-            repaint();
+        }
+
+        // done button
+        int doneY = OFFSET_Y + 20 + blueprints.size() * 40 + 20;
+        if (mx >= bx && mx <= bx + 100 && my >= doneY && my <= doneY + 30) {
+            if (session.isReady()) {
+                engine = new GameEngine(session.getPlacedUnits());
+                inPlacement = false;
+            }
             return;
         }
 
-        if (engine.getCurrentTurn() != Team.PLAYER) return;
-
-        if (mouseX >= 50 && mouseX < 650 && mouseY >= 50 && mouseY < 400) {
-            int c = (mouseX - 50) / 50;
-            int r = (mouseY - 50) / 50;
-            engine.handleClick(r, c);
-            repaint();
+        if (mx >= OFFSET_X && my >= OFFSET_Y) {
+            int c = (mx - OFFSET_X) / TILE;
+            int r = (my - OFFSET_Y) / TILE;
+            if (r < ROWS && c <= MAX_PLACE_COL) {
+                for (Unit u : session.getPlacedUnits()) {
+                    if (u.getRow() == r && u.getCol() == c) {
+                        session.removeUnit(r, c);
+                        return;
+                    }
+                }
+                // empty tile → place
+                if (selectedUnitName != null)
+                    session.placeUnit(selectedUnitName, r, c);
+            }
         }
     }
+
+    private void handleBattleClick(int mx, int my) {
+        if (engine.getCurrentTurn() != Team.PLAYER) return;
+
+        if (mx >= 600 && mx <= 720 && my >= 460 && my <= 510) {
+            engine.passTurn();
+            if (engine.getCurrentTurn() == null)
+                JOptionPane.showMessageDialog(this, engine.getStatusMessage());
+            return;
+        }
+
+        if (mx >= OFFSET_X && mx < OFFSET_X + COLS * TILE && my >= OFFSET_Y && my < OFFSET_Y + ROWS * TILE) {
+            int c = (mx - OFFSET_X) / TILE;
+            int r = (my - OFFSET_Y) / TILE;
+            engine.handleClick(r, c);
+            if (engine.getCurrentTurn() == null)
+                JOptionPane.showMessageDialog(this, engine.getStatusMessage());
+        }
+    }
+
+    public void mouseClicked(MouseEvent e)  {}
+    public void mouseEntered(MouseEvent e)  {}
+    public void mouseExited(MouseEvent e)   {}
+    public void mouseReleased(MouseEvent e) {}
 }
