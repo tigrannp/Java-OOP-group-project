@@ -22,7 +22,7 @@ public class UnitDatabase {
      * @return a list of unit templates loaded from the file, or an empty list if the file is not found
      */
     public static ArrayList<Unit> loadUnits(String path) {
-        ArrayList<Unit> templates = new ArrayList<Unit>();
+        ArrayList<Unit> unitBlueprints = new ArrayList<Unit>();
 
         try {
             Scanner file = new Scanner(new FileInputStream(path));
@@ -54,12 +54,12 @@ public class UnitDatabase {
                 } else {
                     u = new Unit(name, symbol, hp, power, move, attack, PLAYER);
                 }
-                templates.add(u);
+                unitBlueprints.add(u);
             }
             file.close();
         } catch (FileNotFoundException e) {
             System.out.println("Could not load units.txt");
         }
-        return templates;
+        return unitBlueprints;
     }
 }
