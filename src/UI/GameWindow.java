@@ -1,3 +1,16 @@
+/**
+ * Main graphical window for the strategy game.
+ *
+ * Handles:
+ * - rendering the game board
+ * - unit placement phase
+ * - battle phase
+ * - mouse interaction
+ * - switching turns and phases
+ *
+ * This class communicates with the GameEngine for gameplay logic
+ * and UnitPlacementSession for pre-battle setup.
+ */
 package UI;
 
 import Core.*;
