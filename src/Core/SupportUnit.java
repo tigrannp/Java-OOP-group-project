@@ -35,7 +35,6 @@ public class SupportUnit extends Unit {
         return healingPower;
     }
 
-
     /**
      * Heals a target unit by this unit's healing power, capped at the target's max HP.
      *
@@ -48,9 +47,9 @@ public class SupportUnit extends Unit {
     }
 
     /**
-     * Creates a copy of this support unit assigned to the given team.
+     * Creates a shallow copy of this support unit, including its healing power.
      *
-     * @return a new {@link SupportUnit} with the same stats
+     * @return a cloned {@link SupportUnit} with the same stats
      */
     public SupportUnit clone() {
         SupportUnit copy = (SupportUnit) super.clone();
