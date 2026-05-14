@@ -1,1 +1,11 @@
+#Grid Heroes Project Report
 
+Project Summary:
+Grid Strategy: Defenders is a turn-based Java strategy game played on a 7×12 tile board. Players choose from three unit types(Knight, Archer, and Cleric) and face off against AI-controlled enemies. The game supports both a graphical (Swing) interface and a command-line interface, and demonstrates core object-oriented principles.
+
+Contributions:
+Tigran Poghosyan - Implemented most of the codebase, including game engine, unit system, AI, and command-line interface.
+
+Suren Abrahamyan - Wrote the project documentation and prepared the presentation slides.
+
+Arman Dirarian - Produced the UML class diagram covering all classes, relationships, and package structure. Wrote the graphical interface.
