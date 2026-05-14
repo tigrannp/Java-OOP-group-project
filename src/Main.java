@@ -10,6 +10,7 @@ public class Main {
      * @param args command-line arguments (not used)
      */
     public static void main(String[] args) {
+        // args = new String[]{"-console"};
         if(args.length == 0){
             GameConsole.startGUI();
         }else if(args[0].equals("-console")){
