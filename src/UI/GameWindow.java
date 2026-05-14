@@ -1,16 +1,3 @@
-/**
- * Main graphical window for the strategy game.
- *
- * Handles:
- * - rendering the game board
- * - unit placement phase
- * - battle phase
- * - mouse interaction
- * - switching turns and phases
- *
- * This class communicates with the GameEngine for gameplay logic
- * and UnitPlacementSession for pre-battle setup.
- */
 package UI;
 
 import Core.*;
@@ -20,6 +7,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
+/**
+ * Main graphical window for the strategy game.
+ * Handles rendering the board, the placement phase, the battle phase,
+ * mouse interaction, and turn/phase switching.
+ * Communicates with {@link GameEngine} for gameplay logic
+ * and {@link UnitPlacementSession} for pre-battle setup.
+ */
 public class GameWindow extends JFrame implements MouseListener {
 
     private static final int TILE = 50;
@@ -36,6 +30,9 @@ public class GameWindow extends JFrame implements MouseListener {
     private String selectedUnitName = null;
     private boolean inPlacement = true;
 
+    /**
+     * Creates and displays the game window, initializing the placement session.
+     */
     public GameWindow() {
         super("Grid Strategy - Defenders");
         setSize(800, 650);
@@ -48,11 +45,40 @@ public class GameWindow extends JFrame implements MouseListener {
         setVisible(true);
     }
 
+    /**
+     * Paints the current game state — either the placement screen or the battle board.
+     *
+     * @param g the graphics context provided by Swing
+     */
     @Override
     public void paint(Graphics g) {
         if (inPlacement) paintPlacement(g);
         else             paintBattle(g);
     }
+
+    /**
+     * Handles mouse press events, delegating to placement or battle click handlers.
+     *
+     * @param e the mouse event
+     */
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (inPlacement) handlePlacementClick(e.getX(), e.getY());
+        else             handleBattleClick(e.getX(), e.getY());
+        repaint();
+    }
+
+    /** Not used. */
+    public void mouseClicked(MouseEvent e)  {}
+
+    /** Not used. */
+    public void mouseEntered(MouseEvent e)  {}
+
+    /** Not used. */
+    public void mouseExited(MouseEvent e)   {}
+
+    /** Not used. */
+    public void mouseReleased(MouseEvent e) {}
 
     private void paintPlacement(Graphics g) {
         g.setColor(Color.DARK_GRAY);
@@ -166,17 +192,9 @@ public class GameWindow extends JFrame implements MouseListener {
         g.drawString("END TURN", 630, 490);
     }
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-        if (inPlacement) handlePlacementClick(e.getX(), e.getY());
-        else             handleBattleClick(e.getX(), e.getY());
-        repaint();
-    }
-
     private void handlePlacementClick(int mx, int my) {
         ArrayList<Unit> blueprints = session.getUnitBlueprints();
 
-        // unit type buttons
         int bx = OFFSET_X + COLS * TILE + 10;
         for (int i = 0; i < blueprints.size(); i++) {
             int by = OFFSET_Y + 20 + i * 40;
@@ -186,7 +204,6 @@ public class GameWindow extends JFrame implements MouseListener {
             }
         }
 
-        // done button
         int doneY = OFFSET_Y + 20 + blueprints.size() * 40 + 20;
         if (mx >= bx && mx <= bx + 100 && my >= doneY && my <= doneY + 30) {
             if (session.isReady()) {
@@ -206,7 +223,6 @@ public class GameWindow extends JFrame implements MouseListener {
                         return;
                     }
                 }
-                // empty tile → place
                 if (selectedUnitName != null)
                     session.placeUnit(selectedUnitName, r, c);
             }
@@ -237,9 +253,4 @@ public class GameWindow extends JFrame implements MouseListener {
                 JOptionPane.showMessageDialog(this, engine.getStatusMessage());
         }
     }
-
-    public void mouseClicked(MouseEvent e)  {}
-    public void mouseEntered(MouseEvent e)  {}
-    public void mouseExited(MouseEvent e)   {}
-    public void mouseReleased(MouseEvent e) {}
 }
