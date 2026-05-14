@@ -48,9 +48,8 @@ public class GameWindow extends JFrame implements MouseListener {
     /**
      * Paints the current game state — either the placement screen or the battle board.
      *
-     * @param g the graphics context provided by Swing
+     * the graphics context provided by Swing
      */
-    @Override
     public void paint(Graphics g) {
         if (inPlacement) paintPlacement(g);
         else             paintBattle(g);
@@ -58,26 +57,21 @@ public class GameWindow extends JFrame implements MouseListener {
 
     /**
      * Handles mouse press events, delegating to placement or battle click handlers.
-     *
-     * @param e the mouse event
      */
-    @Override
+
     public void mousePressed(MouseEvent e) {
         if (inPlacement) handlePlacementClick(e.getX(), e.getY());
         else             handleBattleClick(e.getX(), e.getY());
         repaint();
     }
 
-    /** Not used. */
+
     public void mouseClicked(MouseEvent e)  {}
 
-    /** Not used. */
     public void mouseEntered(MouseEvent e)  {}
 
-    /** Not used. */
     public void mouseExited(MouseEvent e)   {}
 
-    /** Not used. */
     public void mouseReleased(MouseEvent e) {}
 
     private void paintPlacement(Graphics g) {
