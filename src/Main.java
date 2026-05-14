@@ -4,16 +4,18 @@ import Cli.GameConsole;
  * Entry point for the Grid Strategy - Defenders application.
  */
 public class Main {
+
     /**
-     * Launches the game in CLI mode.
+     * Launches the game. Starts in GUI mode by default,
+     * or CLI mode if the {@code -console} argument is passed.
      *
-     * @param args command-line arguments (not used)
+     * @param args pass {@code -console} to launch in CLI mode
      */
     public static void main(String[] args) {
         // args = new String[]{"-console"};
-        if(args.length == 0){
+        if (args.length == 0) {
             GameConsole.startGUI();
-        }else if(args[0].equals("-console")){
+        } else if (args[0].equals("-console")) {
             GameConsole.startCLI();
         }
     }
