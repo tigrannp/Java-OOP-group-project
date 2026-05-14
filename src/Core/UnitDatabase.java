@@ -11,14 +11,15 @@ import static Core.Team.PLAYER;
  * Loads unit templates from a CSV database file.
  */
 public class UnitDatabase {
+
     /**
-     * Reads unit definitions from a CSV file and returns them as a list of unit templates.
-     * Each line defines one unit. Lines with 6 fields create a regular {@link Unit};
-     * lines with 7 fields (including healing power) create a {@link SupportUnit}.
-     * Blank lines are skipped.
+     * Reads unit definitions from a CSV file and returns them as a list of unit blueprints.
+     * Each line defines one unit with fields: name, symbol, hp, power, move, attackRange, team.
+     * Lines with 8 fields (including healing power) create a {@link SupportUnit};
+     * lines with 7 fields create a regular {@link Unit}. Blank lines are skipped.
      *
      * @param path the path to the CSV database file
-     * @return a list of unit templates loaded from the file, or an empty list if the file is not found
+     * @return a list of unit blueprints, or an empty list if the file is not found
      */
     public static ArrayList<Unit> loadUnits(String path) {
         ArrayList<Unit> unitBlueprints = new ArrayList<Unit>();
@@ -45,14 +46,11 @@ public class UnitDatabase {
 
                 Team team = Team.valueOf(parts[6].toUpperCase());
 
-
                 Unit u;
 
                 if (parts.length == 8) {
                     int healingPower = Integer.parseInt(parts[7]);
-
                     u = new SupportUnit(name, symbol, hp, power, move, attack, team, healingPower);
-
                 } else {
                     u = new Unit(name, symbol, hp, power, move, attack, team);
                 }
