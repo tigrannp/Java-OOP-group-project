@@ -50,13 +50,11 @@ public class SupportUnit extends Unit {
     /**
      * Creates a copy of this support unit assigned to the given team.
      *
-     * @param team the team for the cloned unit
      * @return a new {@link SupportUnit} with the same stats
      */
-    @Override
-    public Unit clone(Team team) {
-        return new SupportUnit(this.getName(), this.getSymbol(), this.getMaxHp(),
-                this.getPower(), this.getMoveRange(), this.getAttackRange(),
-                team, this.healingPower);
+    public SupportUnit clone() {
+        SupportUnit copy = (SupportUnit) super.clone();
+        copy.healingPower = this.healingPower;
+        return copy;
     }
 }

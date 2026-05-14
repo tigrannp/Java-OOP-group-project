@@ -16,6 +16,8 @@ public class GameWindow extends JFrame implements MouseListener {
     private static final int COLS = 12;
     private static final int MAX_PLACE_COL = 5;
 
+    private ArrayList<int[]> highlightedTiles = new ArrayList<>();
+
     private GameEngine engine;
     private UnitPlacementSession session;
     private String selectedUnitName = null;
@@ -107,6 +109,13 @@ public class GameWindow extends JFrame implements MouseListener {
                 g.setColor(Color.BLACK);
                 g.drawRect(x, y, TILE, TILE);
             }
+        }
+
+        for (int[] tile : highlightedTiles) {
+            int x = OFFSET_X + tile[1] * TILE;
+            int y = OFFSET_Y + tile[0] * TILE;
+            g.setColor(new Color(255, 255, 0, 80));
+            g.fillRect(x, y, TILE, TILE);
         }
 
         Unit selected = engine.getSelectedUnit();
@@ -205,6 +214,12 @@ public class GameWindow extends JFrame implements MouseListener {
             int c = (mx - OFFSET_X) / TILE;
             int r = (my - OFFSET_Y) / TILE;
             engine.handleClick(r, c);
+            Unit selected = engine.getSelectedUnit();
+            if (selected != null) {
+                highlightedTiles = engine.getReachableTiles(selected);
+            } else {
+                highlightedTiles.clear();
+            }
             if (engine.getCurrentTurn() == null)
                 JOptionPane.showMessageDialog(this, engine.getStatusMessage());
         }

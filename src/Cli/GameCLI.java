@@ -27,8 +27,8 @@ public class GameCLI {
         Scanner sc = new Scanner(System.in);
         System.out.println("=== Grid Strategy - Defenders ===");
 
-        ArrayList<Unit> templates = UnitDatabase.loadUnits(GameEngine.databasePath);
-        UnitPlacementSession session = new UnitPlacementSession(templates);
+        ArrayList<Unit> unitBlueprints = UnitDatabase.loadUnits(GameEngine.databasePath);
+        UnitPlacementSession session = new UnitPlacementSession(unitBlueprints);
 
         runPlacementPhase(sc, session);
 

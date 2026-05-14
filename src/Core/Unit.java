@@ -4,7 +4,7 @@ import Exceptions.InvalidUnitException;
 /**
  * Represents a game unit with stats, position, and turn state.
  */
-public class Unit {
+public class Unit implements Cloneable{
     private String name;
     private String symbol;
     private int hp;
@@ -151,10 +151,14 @@ public class Unit {
     /**
      * Creates a copy of this unit assigned to the given team.
      *
-     * @param team the team for the cloned unit
      * @return a new {@link Unit} with the same stats
      */
-    public Unit clone(Team team) {
-        return new Unit(this.name, this.symbol, this.maxHp, this.power, this.moveRange, this.attackRange, team);
+    public Unit clone() {
+        try {
+            return (Unit) super.clone();
+        } catch (CloneNotSupportedException e) {
+
+        }
+        return null;
     }
 }

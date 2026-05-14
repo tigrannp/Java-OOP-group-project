@@ -43,15 +43,18 @@ public class UnitDatabase {
                 int move = Integer.parseInt(parts[4]);
                 int attack = Integer.parseInt(parts[5]);
 
+                Team team = Team.valueOf(parts[6].toUpperCase());
+
+
                 Unit u;
 
-                if (parts.length == 7) {
-                    int healingPower = Integer.parseInt(parts[6]);
+                if (parts.length == 8) {
+                    int healingPower = Integer.parseInt(parts[7]);
 
-                    u = new SupportUnit(name, symbol, hp, power, move, attack, PLAYER, healingPower);
+                    u = new SupportUnit(name, symbol, hp, power, move, attack, team, healingPower);
 
                 } else {
-                    u = new Unit(name, symbol, hp, power, move, attack, PLAYER);
+                    u = new Unit(name, symbol, hp, power, move, attack, team);
                 }
                 unitBlueprints.add(u);
             }

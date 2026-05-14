@@ -252,6 +252,21 @@ public class GameEngine {
         }
     }
 
+    public ArrayList<int[]> getReachableTiles(Unit unit) {
+        ArrayList<int[]> tiles = new ArrayList<>();
+        for (int r = 0; r < 7; r++) {
+            for (int c = 0; c < 12; c++) {
+                int dist = getDistance(unit.getRow(), unit.getCol(), r, c);
+                if (!unit.getHasMoved() && dist <= unit.getMoveRange() && getUnitAt(r, c) == null) {
+                    tiles.add(new int[]{r, c});
+                } else if (!unit.getHasActed() && dist <= unit.getAttackRange() && getUnitAt(r, c) != null && getUnitAt(r, c).getTeam() != unit.getTeam()) {
+                    tiles.add(new int[]{r, c});
+                }
+            }
+        }
+        return tiles;
+    }
+
     private void checkWinCondition() {
         boolean hasPlayer = false;
         boolean hasEnemy = false;

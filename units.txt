@@ -1,3 +1,3 @@
-Knight,K,30,10,2,1
-Archer,A,20,8,2,3
-Cleric,C,20,5,2,2,5
+Knight,K,30,10,2,1,PLAYER
+Archer,A,20,8,2,3,PLAYER
+Cleric,C,20,5,2,2,PLAYER,5

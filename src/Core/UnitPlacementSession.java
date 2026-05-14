@@ -48,7 +48,7 @@ public class UnitPlacementSession {
 
         Unit blueprint = getBlueprint(name);
         if (blueprint == null) return PlacementResult.INVALID_TYPE;
-        Unit unit = blueprint.clone(Team.PLAYER);
+        Unit unit = blueprint.clone();
 
         unit.setRow(row);
         unit.setCol(col);
