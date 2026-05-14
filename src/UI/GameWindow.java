@@ -128,7 +128,9 @@ public class GameWindow extends JFrame implements MouseListener {
         String hint = selectedUnitName != null ? "Placing: " + selectedUnitName + "  |  Click tile to place, click unit to remove" : "Select a unit type on the right";
         g.drawString(hint, OFFSET_X, OFFSET_Y + ROWS * TILE + 50);
     }
-
+/**
+ * Draws the battle screen and unit information.
+ */
     private void paintBattle(Graphics g) {
         g.setColor(Color.DARK_GRAY);
         g.fillRect(0, 0, 800, 650);
@@ -185,7 +187,9 @@ public class GameWindow extends JFrame implements MouseListener {
         g.setColor(Color.WHITE);
         g.drawString("END TURN", 630, 490);
     }
-
+/**
+ * Handles mouse clicks during the placement phase.
+ */
     private void handlePlacementClick(int mx, int my) {
         ArrayList<Unit> blueprints = session.getUnitBlueprints();
 
@@ -222,7 +226,9 @@ public class GameWindow extends JFrame implements MouseListener {
             }
         }
     }
-
+/**
+ * Handles mouse clicks during the battle phase.
+ */
     private void handleBattleClick(int mx, int my) {
         if (engine.getCurrentTurn() != Team.PLAYER) return;
 
