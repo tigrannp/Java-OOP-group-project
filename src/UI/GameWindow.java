@@ -11,8 +11,8 @@ import java.util.ArrayList;
  * Main graphical window for the strategy game.
  * Handles rendering the board, the placement phase, the battle phase,
  * mouse interaction, and turn/phase switching.
- * Communicates with {@link GameEngine} for gameplay logic
- * and {@link UnitPlacementSession} for pre-battle setup.
+ * Communicates with GameEngine for gameplay logic
+ * and UnitPlacementSession for pre-battle setup.
  */
 public class GameWindow extends JFrame implements MouseListener {
 
