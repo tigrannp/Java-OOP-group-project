@@ -27,8 +27,8 @@ public class GameCLI {
         Scanner sc = new Scanner(System.in);
         System.out.println("=== Grid Strategy - Defenders ===");
 
-        ArrayList<Unit> unitBlueprints = UnitDatabase.loadUnits(GameEngine.databasePath);
-        UnitPlacementSession session = new UnitPlacementSession(unitBlueprints);
+        ArrayList<Unit> templates = UnitDatabase.loadUnits(GameEngine.databasePath);
+        UnitPlacementSession session = new UnitPlacementSession(templates);
 
         runPlacementPhase(sc, session);
 
@@ -276,7 +276,7 @@ public class GameCLI {
     }
 
     /**
-     * Prints the result of the enemy's turn and the current game status.
+     * Prints the result of the enemy's turn, including the current game status.
      * If the game has ended, also prints the final board.
      */
     private void printEnemyLog() {
